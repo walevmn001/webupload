@@ -1,0 +1,17 @@
+{
+  "name": "free-upload-hub",
+  "version": "1.0.0",
+  "description": "Website upload/download file truc tiep khong can dang nhap, ho tro nhieu dich vu luu tru mien phi",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@file-kiwi/node": "^1.0.9"
+  }
+}

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FreeUpload Hub — Up & tải file không cần đăng nhập</title>
+  <meta name="description" content="Upload file và chia sẻ link tải trực tiếp, không cần đăng nhập. Hỗ trợ nhiều dịch vụ lưu trữ miễn phí." />
+  <link rel="stylesheet" href="/styles.css?v=upload-menu-fix-2" />
+  <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6ZySEbvvV_l2o0raNvEG4XiYVpqH-YWeVJu-OF1eVCPygWkeDrfe4RDU&amp;s=10" />
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6ZySEbvvV_l2o0raNvEG4XiYVpqH-YWeVJu-OF1eVCPygWkeDrfe4RDU&amp;s=10" alt="FreeUpload Hub" /></div>
+      <div>
+        <h1>FreeUpload Hub</h1>
+        <p class="tagline">Up &amp; chia sẻ file trực tiếp — không cần đăng nhập</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button id="themeBtn" class="icon-btn" type="button" aria-label="Chuyển sang giao diện sáng" title="Chuyển sang giao diện sáng"></button>
+      <button id="reportBtn" class="ghost-btn" title="Gửi báo lỗi">🐞 Báo lỗi</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card upload-card">
+      <div class="card-head">
+        <h2>1. Chọn file để tải lên</h2>
+        <span id="limitBadge" class="badge">Giới hạn: đang tải…</span>
+      </div>
+
+      <div id="dropzone" class="dropzone" tabindex="0">
+        <input type="file" id="fileInput" hidden multiple />
+        <div class="dz-icon">⬆️</div>
+        <p class="dz-title">Kéo &amp; thả file vào đây</p>
+        <p class="dz-sub">hoặc <span class="link">bấm để chọn file</span> (có thể chọn nhiều file)</p>
+      </div>
+
+      <div id="fileList" class="file-list"></div>
+
+      <div class="card-head" style="margin-top:22px">
+        <h2>2. Chọn dịch vụ lưu trữ</h2>
+        <button id="checkServices" class="ghost-btn small" title="Kiểm tra dịch vụ nào đang hoạt động">🔍 Kiểm tra</button>
+      </div>
+
+      <div class="dropdown" id="serviceDropdown">
+        <button type="button" class="dropdown-toggle" id="ddToggle" aria-haspopup="listbox" aria-expanded="false">
+          <span class="dd-current" id="ddCurrent"></span>
+          <span class="dd-caret">▾</span>
+        </button>
+        <div class="dropdown-menu hidden" id="ddMenu" role="listbox"></div>
+      </div>
+
+      <p class="hint" id="limitHint"></p>
+
+      <div class="upload-actions">
+        <button id="uploadBtn" class="primary-btn" disabled>🚀 Tải lên</button>
+        <button id="clearFiles" class="ghost-btn" type="button">Xoá danh sách</button>
+      </div>
+
+      <div id="progressWrap" class="progress-wrap hidden">
+        <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+        <div class="progress-text"><span id="progressLabel">Đang xử lý…</span><span id="progressPct">0%</span></div>
+      </div>
+    </section>
+
+    <section id="resultSection" class="card result-card hidden">
+      <div class="card-head">
+        <h2>✅ Tải lên thành công</h2>
+        <button id="clearResult" class="ghost-btn small">Xoá kết quả</button>
+      </div>
+      <div id="results"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>⬇️ Tải file từ link có sẵn</h2>
+      </div>
+      <p class="hint">Dán link trực tiếp để tải file qua máy chủ trung gian (hữu ích khi link không hỗ trợ tải trực tiếp).</p>
+      <div class="inline-form">
+        <input type="url" id="dlUrl" placeholder="https://.../file.zip" />
+        <button id="dlBtn" class="primary-btn">Tải xuống</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>🕑 Lịch sử phiên hiện tại</h2>
+        <button id="clearHistory" class="ghost-btn small">Xoá lịch sử</button>
+      </div>
+      <div id="history" class="history"><p class="muted">Chưa có file nào được tải lên trong phiên này.</p></div>
+    </section>
+
+    <footer class="footer">
+      <p>FreeUpload Hub — công cụ mã nguồn mở, không lưu file trên máy chủ. File được lưu tại bên thứ ba bạn chọn.</p>
+    </footer>
+  </main>
+
+  <!-- Modal báo lỗi -->
+  <div id="reportModal" class="modal hidden">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-box">
+      <div class="card-head">
+        <h2>🐞 Báo lỗi / Góp ý</h2>
+        <button class="icon-btn" data-close>✕</button>
+      </div>
+      <p class="hint">Mô tả lỗi bạn gặp (dịch vụ nào, file gì, thông báo lỗi…). Báo cáo sẽ được ghi lại để cải thiện.</p>
+      <label class="field">
+        <span>Nội dung <b>*</b></span>
+        <textarea id="reportMessage" rows="4" placeholder="Ví dụ: Gofile báo lỗi 502 khi up file 80MB…"></textarea>
+      </label>
+      <label class="field">
+        <span>Email liên hệ (không bắt buộc)</span>
+        <input type="email" id="reportEmail" placeholder="ban@email.com" />
+      </label>
+      <label class="field">
+        <span>Dịch vụ liên quan (không bắt buộc)</span>
+        <select id="reportService"><option value="">— Chọn —</option></select>
+      </label>
+      <div class="modal-actions">
+        <button class="ghost-btn" data-close>Huỷ</button>
+        <button id="reportSubmit" class="primary-btn">Gửi báo lỗi</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toasts" class="toasts"></div>
+
+  <script src="/app.js?v=upload-menu-fix-2"></script>
+</body>
+</html>
